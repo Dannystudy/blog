@@ -10,7 +10,7 @@ class Link(models.Model):
         (STATUS_DELETE, '删除')
     )
     title = models.CharField(max_length=50, verbose_name="标题")
-    herf = models.URLField(verbose_name="链接")  #默认200
+    herf = models.URLField(verbose_name="链接")  # 默认200
     status = models.PositiveIntegerField(default=STATUS_NORMAL, choices=STATUS_ITEMS, verbose_name="状态")
     weight = models.PositiveIntegerField(default=1, choices=zip(range(1, 6), range(1, 6)),
                                          verbose_name="权重", help_text="权重高展示靠前")
