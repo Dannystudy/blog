@@ -60,16 +60,39 @@ class PostAdmin(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
 
-    #编辑页面
+    # 编辑页面
     save_on_top = True
 
-    fields = (
+    '''fields = (
         ('category', 'title'),
         'desc',
         'status',
         'content',
         'tag'
+    )'''
+
+    fieldsets = (
+        ('基础配置', {
+            'description': "基础配置描述",
+            'fields': (
+                ('title', 'category'),
+                'status'
+            )
+        }),
+        ('内容', {
+            'fields': (
+                'desc',
+                'content'
+            )
+        }),
+        ('额外信息', {
+            'classes': ('collapse', ),
+            'fields': ('tag', )
+        })
     )
+    filter_horizontal = ('tag',)
+
+    # filter_vertical = ('tag',)
 
     def operator(self, obj):
         return format_html(
@@ -86,6 +109,5 @@ class PostAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(PostAdmin, self).get_queryset(request)
         return qs.filter(owner=request.user)
-
 
 
