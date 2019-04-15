@@ -97,7 +97,6 @@ class PostAdmin(BaseOwnerAdmin):
             )
         }),
         ('额外信息', {
-            'classes': ('collapse', ),
             'fields': ('tag', )
         })
     )
@@ -118,4 +117,6 @@ class PostAdmin(BaseOwnerAdmin):
         }
         js = ("https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js",)
 
-
+    def save_model(self, request, obj, form, change):
+        obj.owner = request.user
+        return super(PostAdmin, self).save_model(request, obj, form, change)

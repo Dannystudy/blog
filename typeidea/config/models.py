@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django.db import models
 
 
@@ -31,6 +32,11 @@ class SideBar(models.Model):
         (STATUS_SHOW, '展示'),
         (STATUS_HIDE, '隐藏')
     )
+
+    DISPLAY_HTML = 1
+    DISPLAY_LATEST = 2
+    DISPLAY_HOT = 3
+    DISPLAY_COMMENT = 4
     SIDE_TYPE = (
         (1, 'HTML'),
         (2, '最新文章'),
@@ -50,3 +56,32 @@ class SideBar(models.Model):
     def __str__(self):
         return self.title
 
+    @classmethod
+    def get_all(cls):
+        return cls.objects.filter(status=cls.STATUS_SHOW)
+
+    @property
+    def content_html(self):
+        """直接渲染模板"""
+        from blog.models import Post # 避免循环引用
+        from comment.models import Comment
+
+        result = ''
+        if self.display_type == self.DISPLAY_HTML:
+            result = self.content
+        elif self.display_type == self.DISPLAY_LATEST:
+            context = {
+                'post': Post.latest_posts()
+            }
+            result = render_to_string('config/blocks/sidebaar_posts.html', context)
+        elif self.display_type == self.DISPLAY_HOT:
+            context = {
+                'post': Post.hot_posts()
+            }
+            result = render_to_string('config/blocks/sidebaar_posts.html', context)
+        elif self.display_type == self.DISPLAY_COMMENT:
+            context = {
+                'comments': Comment.objects.filter(status=Comment.STATUS_NORMAL)
+            }
+            result = render_to_string('config/blocks/sidebaar_posts.html', context)
+        return result
